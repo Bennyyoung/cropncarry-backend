@@ -10,7 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       host: 'localhost',
       port: 5432,
       database: 'postgres',
-      autoLoadEntities: true
+      autoLoadEntities: true,
+      synchronize: true, // Not recommeded for production environment
     })
   ]
 })
