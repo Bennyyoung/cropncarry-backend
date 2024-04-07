@@ -1,13 +1,12 @@
 import { IsInt, IsOptional, IsPositive } from "class-validator"
+import { IsCardinal } from "common/decorators/is-cardinal.decorator"
 
 export class PaginationDto {
   @IsInt()
-  @IsPositive()
-  @IsOptional()
+  @IsCardinal()
   readonly limit: number
 
   @IsInt()
-  @IsPositive()
-  @IsOptional()
+  @IsCardinal()
   readonly offset: number
 }
