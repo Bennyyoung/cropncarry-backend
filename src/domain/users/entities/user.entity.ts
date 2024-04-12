@@ -1,7 +1,8 @@
 import { RegistryDates } from "common/embedded/registry-dates.embedded";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Order } from "domain/orders/entities/order.entity";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number
@@ -13,11 +14,14 @@ export class User {
   email: string
 
   @Column({ unique: true })
-  phone: string
+  phone: string;
 
   @Column()
   password: string;
 
   @Column(() => RegistryDates, { prefix: false })
   registryDate: RegistryDates
+
+  @OneToMany(() => Order, (order) => order.customer)
+  orders: Order[]
 }
