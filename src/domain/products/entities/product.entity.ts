@@ -1,7 +1,9 @@
 import { RegistryDates } from "common/embedded/registry-dates.embedded"
 import { Category } from "domain/categories/entities/category.entity"
-import { Column, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm"
+import { OrderItem } from "domain/orders/entities/order-item-entity"
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
+@Entity('Product')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number
@@ -21,4 +23,11 @@ export class Product {
   @ManyToMany(() => Category, (category) => category.products)
   @JoinTable({ name: 'product_to_category' })
   categories: Category[]
+
+  @OneToMany(() => OrderItem, (item) => item.product)
+  items: OrderItem[]
+
+  get orders() {
+    return this.items.map(item => item.order)
+  }
 }
