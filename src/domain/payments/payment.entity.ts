@@ -14,6 +14,7 @@ export class Payment {
     nullable: false,
     onDelete: 'CASCADE'
   })
+
   @JoinColumn()
   order: Order
 }

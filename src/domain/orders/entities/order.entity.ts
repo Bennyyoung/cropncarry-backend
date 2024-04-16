@@ -3,7 +3,7 @@ import { OrderStatus } from "../enums/order-status.enum"
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm"
 import { User } from "domain/users/entities/user.entity"
 import { Payment } from "domain/payments/payment.entity"
-import { OrderItem } from "./order-item-entity"
+import { OrderItem } from "./order-item.entity"
 
 @Entity('order')
 export class Order {

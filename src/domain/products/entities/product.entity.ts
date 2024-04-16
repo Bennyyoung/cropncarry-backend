@@ -1,9 +1,9 @@
 import { RegistryDates } from "common/embedded/registry-dates.embedded"
 import { Category } from "domain/categories/entities/category.entity"
-import { OrderItem } from "domain/orders/entities/order-item-entity"
+import { OrderItem } from "domain/orders/entities/order-item.entity"
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
-@Entity('Product')
+@Entity('product')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number

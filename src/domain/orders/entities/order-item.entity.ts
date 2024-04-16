@@ -2,8 +2,7 @@ import { Column, Entity, ManyToOne, PrimaryColumn } from "typeorm";
 import { Order } from "./order.entity";
 import { Product } from "domain/products/entities/product.entity";
 
-
-@Entity('orderItem')
+@Entity('order-item')
 export class OrderItem {
   @PrimaryColumn()
   orderId: number
@@ -11,11 +10,12 @@ export class OrderItem {
   @PrimaryColumn()
   productId: number
 
-  @ManyToOne(() => Order, order => order.items, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Order, (order) => order.items, { onDelete: 'CASCADE' })
   order: Order
 
-  @ManyToOne(() => Product, product => product.items)
+  @ManyToOne(() => Product, (product) => product.items)
   product: Product
+
   @Column()
   quantity: number;
 

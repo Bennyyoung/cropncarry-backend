@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class CreateProduct1713044881211 implements MigrationInterface {
-    name = 'CreateProduct1713044881211'
+export class CreateOrderItem1713305662523 implements MigrationInterface {
+    name = 'CreateOrderItem1713305662523'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.query(`
@@ -16,6 +16,37 @@ export class CreateProduct1713044881211 implements MigrationInterface {
                 CONSTRAINT "UQ_97672ac88f789774dd47f7c8be3" UNIQUE ("email"),
                 CONSTRAINT "UQ_a000cca60bcf04454e727699490" UNIQUE ("phone"),
                 CONSTRAINT "PK_a3ffb1c0c8416b9fc6f907b7433" PRIMARY KEY ("id")
+            )
+        `);
+        await queryRunner.query(`
+            CREATE TABLE "category" (
+                "id" SERIAL NOT NULL,
+                "name" character varying NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "UQ_23c05c292c439d77b0de816b500" UNIQUE ("name"),
+                CONSTRAINT "PK_9c4e4a89e3674fc9f382d733f03" PRIMARY KEY ("id")
+            )
+        `);
+        await queryRunner.query(`
+            CREATE TABLE "product" (
+                "id" SERIAL NOT NULL,
+                "name" character varying NOT NULL,
+                "description" character varying,
+                "price" numeric(6, 2) NOT NULL,
+                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
+                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
+                CONSTRAINT "UQ_22cc43e9a74d7498546e9a63e77" UNIQUE ("name"),
+                CONSTRAINT "PK_bebc9158e480b949565b4dc7a82" PRIMARY KEY ("id")
+            )
+        `);
+        await queryRunner.query(`
+            CREATE TABLE "order-item" (
+                "orderId" integer NOT NULL,
+                "productId" integer NOT NULL,
+                "quantity" integer NOT NULL,
+                "price" numeric(6, 2) NOT NULL,
+                CONSTRAINT "PK_8c2200ddb139903bfb8d93018a5" PRIMARY KEY ("orderId", "productId")
             )
         `);
         await queryRunner.query(`
@@ -39,28 +70,6 @@ export class CreateProduct1713044881211 implements MigrationInterface {
             )
         `);
         await queryRunner.query(`
-            CREATE TABLE "category" (
-                "id" SERIAL NOT NULL,
-                "name" character varying NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "UQ_23c05c292c439d77b0de816b500" UNIQUE ("name"),
-                CONSTRAINT "PK_9c4e4a89e3674fc9f382d733f03" PRIMARY KEY ("id")
-            )
-        `);
-        await queryRunner.query(`
-            CREATE TABLE "Product" (
-                "id" SERIAL NOT NULL,
-                "name" character varying NOT NULL,
-                "description" character varying,
-                "price" numeric(6, 2) NOT NULL,
-                "createdAt" TIMESTAMP NOT NULL DEFAULT now(),
-                "updatedAt" TIMESTAMP NOT NULL DEFAULT now(),
-                CONSTRAINT "UQ_08cd99ca921561a289373c14b42" UNIQUE ("name"),
-                CONSTRAINT "PK_9fc040db7872192bbc26c515710" PRIMARY KEY ("id")
-            )
-        `);
-        await queryRunner.query(`
             CREATE TABLE "product_to_category" (
                 "productId" integer NOT NULL,
                 "categoryId" integer NOT NULL,
@@ -74,6 +83,14 @@ export class CreateProduct1713044881211 implements MigrationInterface {
             CREATE INDEX "IDX_70eb26cea4105a27ce856dca20" ON "product_to_category" ("categoryId")
         `);
         await queryRunner.query(`
+            ALTER TABLE "order-item"
+            ADD CONSTRAINT "FK_29ee234059c3b7a783bddac5bf8" FOREIGN KEY ("orderId") REFERENCES "order"("id") ON DELETE CASCADE ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "order-item"
+            ADD CONSTRAINT "FK_6811363ab71c6dca8ebc9db33f6" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
+        `);
+        await queryRunner.query(`
             ALTER TABLE "order"
             ADD CONSTRAINT "FK_124456e637cca7a415897dce659" FOREIGN KEY ("customerId") REFERENCES "users"("id") ON DELETE NO ACTION ON UPDATE NO ACTION
         `);
@@ -83,7 +100,7 @@ export class CreateProduct1713044881211 implements MigrationInterface {
         `);
         await queryRunner.query(`
             ALTER TABLE "product_to_category"
-            ADD CONSTRAINT "FK_c4ec20a1cb494c9c3e34c8da105" FOREIGN KEY ("productId") REFERENCES "Product"("id") ON DELETE CASCADE ON UPDATE CASCADE
+            ADD CONSTRAINT "FK_c4ec20a1cb494c9c3e34c8da105" FOREIGN KEY ("productId") REFERENCES "product"("id") ON DELETE CASCADE ON UPDATE CASCADE
         `);
         await queryRunner.query(`
             ALTER TABLE "product_to_category"
@@ -105,6 +122,12 @@ export class CreateProduct1713044881211 implements MigrationInterface {
             ALTER TABLE "order" DROP CONSTRAINT "FK_124456e637cca7a415897dce659"
         `);
         await queryRunner.query(`
+            ALTER TABLE "order-item" DROP CONSTRAINT "FK_6811363ab71c6dca8ebc9db33f6"
+        `);
+        await queryRunner.query(`
+            ALTER TABLE "order-item" DROP CONSTRAINT "FK_29ee234059c3b7a783bddac5bf8"
+        `);
+        await queryRunner.query(`
             DROP INDEX "public"."IDX_70eb26cea4105a27ce856dca20"
         `);
         await queryRunner.query(`
@@ -114,16 +137,19 @@ export class CreateProduct1713044881211 implements MigrationInterface {
             DROP TABLE "product_to_category"
         `);
         await queryRunner.query(`
-            DROP TABLE "Product"
-        `);
-        await queryRunner.query(`
-            DROP TABLE "category"
-        `);
-        await queryRunner.query(`
             DROP TABLE "payment"
         `);
         await queryRunner.query(`
             DROP TABLE "order"
+        `);
+        await queryRunner.query(`
+            DROP TABLE "order-item"
+        `);
+        await queryRunner.query(`
+            DROP TABLE "product"
+        `);
+        await queryRunner.query(`
+            DROP TABLE "category"
         `);
         await queryRunner.query(`
             DROP TABLE "users"
